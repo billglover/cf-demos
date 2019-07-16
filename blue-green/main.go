@@ -14,5 +14,5 @@ func main() {
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Active deployment: " + color))
+	w.Write([]byte("Active deployment: " + color + "\n"))
 }
