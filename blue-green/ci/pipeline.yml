@@ -32,7 +32,7 @@ jobs:
 
 - name: deploy
   plan:
-  - get: cf-demos
+  - get: blue-green
     trigger: true
     passed:
       - unit
