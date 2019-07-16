@@ -10,10 +10,6 @@ image_resource:
 inputs:
 - name: cf-demos
 - name: app-info
-- name: artefacts
-
-outputs:
-- name: artefacts
 
 run:
-  path: cf-demos/blue-green/ci/manifest.sh
+  path: cf-demos/blue-green/ci/switch-routes.sh

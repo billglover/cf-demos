@@ -49,6 +49,8 @@ jobs:
       PWS_SPACE: {{pws-space}}
   - task: build
     file: cf-demos/blue-green/ci/build.yml
+  - task: manifest
+    file: cf-demos/blue-green/ci/manifest.yml
   - put: PWS
     inputs:
       - artefacts
@@ -66,6 +68,16 @@ jobs:
     file: cf-demos/blue-green/ci/current.yml
     params:
       PWS_APP_SUFFIX: {{pws-app-suffix}}
+      PWS_API: {{pws-api}}
+      PWS_ORG: {{pws-organization}}
+      PWS_USER: {{deploy-username}}
+      PWS_PWD: {{deploy-password}}
+      PWS_SPACE: {{pws-space}}
+  - task: switch-app-routes
+    file: cf-demos/blue-green/ci/switch-routes.yml
+    params:
+      PWS_APP_SUFFIX: {{pws-app-suffix}}
+      PWS_APP_DOMAIN: {{pws-app-domain}}
       PWS_API: {{pws-api}}
       PWS_ORG: {{pws-organization}}
       PWS_USER: {{deploy-username}}

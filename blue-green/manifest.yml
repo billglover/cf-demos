@@ -1,0 +1,9 @@
+---
+applications:
+- name: bg-bluegreen
+  memory: 24M
+  instances: 1
+  buildpacks:
+  - binary_buildpack
+  command: ./app; ls; find .
+
