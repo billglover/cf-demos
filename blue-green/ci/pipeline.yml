@@ -41,6 +41,7 @@ jobs:
   - task: current-colour
     file: cf-demos/blue-green/ci/current.yml
     params:
+      PWS_APP_DOMAIN: {{pws-app-domain}}
       PWS_APP_SUFFIX: {{pws-app-suffix}}
       PWS_API: {{pws-api}}
       PWS_ORG: {{pws-organization}}
@@ -67,6 +68,7 @@ jobs:
   - task: current-colour
     file: cf-demos/blue-green/ci/current.yml
     params:
+      PWS_APP_DOMAIN: {{pws-app-domain}}
       PWS_APP_SUFFIX: {{pws-app-suffix}}
       PWS_API: {{pws-api}}
       PWS_ORG: {{pws-organization}}
