@@ -37,8 +37,6 @@ jobs:
     passed:
       - unit
   - put: PWS
-    inputs:
-    - artefacts
     params:
       manifest: cf-demos/blue-green/ci/manifest.yml
-      path: cf-demos/blue-green/build/app
+      path: artefacts/app

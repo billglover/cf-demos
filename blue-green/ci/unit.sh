@@ -11,4 +11,4 @@ echo
 echo "Running tests..."
 go test -v ./...
 
-CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o build/app . 
+CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o artefacts/app . 
