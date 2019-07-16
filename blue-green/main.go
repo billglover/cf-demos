@@ -7,7 +7,8 @@ import (
 )
 
 // Payload is the response returned by the server. It simply indicates whether
-// this is a blue or a green deployment.
+// this is a blue or a green deployment. This may be enhanced to include
+// further details about the deployment.
 type Payload struct {
 	Color string `json:"color,omitempty"`
 }
