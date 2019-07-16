@@ -14,4 +14,4 @@ outputs:
 - name: app-info
 
 run:
-  path: cf-demos/bluegreen/ci/current.sh
+  path: cf-demos/blue-green/ci/current.sh
