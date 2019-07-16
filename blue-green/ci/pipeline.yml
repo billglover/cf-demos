@@ -1,7 +1,8 @@
 groups:
 - name: main
   jobs:
-  - unit-tests
+  - unit
+  - deploy
 
 resources:
 - name: cf-demos
@@ -10,6 +11,7 @@ resources:
     branch: master
     uri: https://github.com/billglover/cf-demos
     paths: [blue-green/*]
+
 - name: PWS
   type: cf
   source:
@@ -17,7 +19,7 @@ resources:
     organization: {{pws-organization}}
     username: {{deploy-username}}
     password: {{deploy-password}}
-    skip_cert_check: false
+    skip_cert_check: true
     space: {{pws-space}}
 
 jobs:
@@ -27,4 +29,14 @@ jobs:
     trigger: true
   - task: unit
     file: cf-demos/blue-green/ci/unit.yml
-    
+
+- name: deploy
+  plan:
+  - get: cf-demos
+    trigger: true
+    passed:
+      - unit
+  - put: PWS
+    params:
+      manifest: cf-demos/blue-green/ci/manifest.yml
+      path: cf-demos/blue-green/blue-green

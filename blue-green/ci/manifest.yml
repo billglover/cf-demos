@@ -1,0 +1,8 @@
+---
+applications:
+- name: 
+  memory: 128M
+  instances: 1
+  host: bglover-hello
+  command: ./blue-green
+  buildpack: binary_buildpack

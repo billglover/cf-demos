@@ -12,4 +12,4 @@ caches:
 - path: gopath/
 
 run:
-- path: cf-demos/blue-green/ci/unit.sh
+  path: cf-demos/blue-green/ci/unit.sh
