@@ -1,0 +1,14 @@
+---
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: pivotalservices/docker-concourse-cf-tools
+    tag: latest
+  inputs:
+  - name: cf-demos
+  outputs:
+  - name: app-info
+  run:
+    path: cf-demos/bluegreen/ci/current.sh
