@@ -13,3 +13,8 @@ caches:
 
 run:
   path: cf-demos/blue-green/ci/unit.sh
+
+outputs:
+- name: artefacts
+  path: cf-demos/blue-green/build/
+

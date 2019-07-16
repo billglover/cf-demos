@@ -5,7 +5,7 @@ groups:
   - deploy
 
 resources:
-- name: cf-demos
+- name: blue-green
   type: git
   source:
     branch: master
@@ -25,7 +25,7 @@ resources:
 jobs:
 - name: unit
   plan:
-  - get: cf-demos
+  - get: blue-green
     trigger: true
   - task: unit
     file: cf-demos/blue-green/ci/unit.yml
@@ -37,6 +37,8 @@ jobs:
     passed:
       - unit
   - put: PWS
+    inputs:
+    - artefacts
     params:
       manifest: cf-demos/blue-green/ci/manifest.yml
-      path: cf-demos/blue-green/blue-green
+      path: cf-demos/blue-green/build/app
