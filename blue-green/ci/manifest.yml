@@ -5,5 +5,5 @@ applications:
   instances: 1
   buildpacks:
   - binary_buildpack
-  command: ./artefacts/app; ls; find .
+  command: ./app; ls; find .
 

@@ -7,7 +7,8 @@ groups:
 resources:
 - name: cf-demos
   type: git
-  webhook_token: {{webhook-token}} 
+  webhook_token: {{webhook-token}}
+  icon: github-circle
   source:
     branch: master
     uri: https://github.com/billglover/cf-demos
@@ -43,3 +44,4 @@ jobs:
       - artefacts
     params:
       manifest: artefacts/manifest.yml
+      path: artefacts
