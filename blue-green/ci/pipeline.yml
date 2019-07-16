@@ -5,7 +5,7 @@ groups:
   - deploy
 
 resources:
-- name: blue-green
+- name: cf-demos
   type: git
   source:
     branch: master
@@ -25,14 +25,14 @@ resources:
 jobs:
 - name: unit
   plan:
-  - get: blue-green
+  - get: cf-demos
     trigger: true
   - task: unit
     file: cf-demos/blue-green/ci/unit.yml
 
 - name: deploy
   plan:
-  - get: blue-green
+  - get: cf-demos
     trigger: true
     passed:
       - unit
