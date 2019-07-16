@@ -5,5 +5,5 @@ applications:
   instances: 1
   buildpacks:
   - binary_buildpack
-  command: ./app
+  command: ./artefacts/app; sleep 1h
 

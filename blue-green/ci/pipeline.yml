@@ -20,7 +20,6 @@ resources:
     organization: {{pws-organization}}
     username: {{deploy-username}}
     password: {{deploy-password}}
-    skip_cert_check: true
     space: {{pws-space}}
 
 jobs:
@@ -44,4 +43,3 @@ jobs:
       - artefacts
     params:
       manifest: artefacts/manifest.yml
-      path: artefacts/app
