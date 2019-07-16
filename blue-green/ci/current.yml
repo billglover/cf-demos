@@ -6,9 +6,12 @@ image_resource:
   source:
     repository: pivotalservices/docker-concourse-cf-tools
     tag: latest
-  inputs:
-  - name: cf-demos
-  outputs:
-  - name: app-info
-  run:
-    path: cf-demos/bluegreen/ci/current.sh
+
+inputs:
+- name: cf-demos
+
+outputs:
+- name: app-info
+
+run:
+  path: cf-demos/bluegreen/ci/current.sh
