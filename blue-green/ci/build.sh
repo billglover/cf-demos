@@ -8,6 +8,5 @@ export PATH=$PWD/gopath/bin:$PATH
 cd cf-demos/blue-green
 
 echo
-echo "Running tests..."
-go test -v ./...
-
+echo "Running build..."
+CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o artefacts/app . 

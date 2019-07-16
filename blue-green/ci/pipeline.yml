@@ -36,7 +36,11 @@ jobs:
     trigger: true
     passed:
       - unit
+  - task: build
+    file: cf-demos/blue-green/ci/build.yml
   - put: PWS
+    inputs:
+      - artefacts
     params:
       manifest: cf-demos/blue-green/ci/manifest.yml
       path: artefacts/app
