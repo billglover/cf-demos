@@ -13,18 +13,19 @@ type Payload struct {
 	Color string `json:"color,omitempty"`
 }
 
-var color string
+var colour string
 
 func main() {
-	color = os.Getenv("DEPLOYMENT_COLOR")
+	colour = os.Getenv("DEPLOYMENT_COLOR")
 	http.HandleFunc("/", hello)
 	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 }
 
 // Hello handles HTTP requests and returns the value of the color variable.
 func hello(w http.ResponseWriter, r *http.Request) {
-	p := Payload{Color: color}
+	p := Payload{Color: colour}
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Deployment-Colour", colour)
 	json.NewEncoder(w).Encode(p)
 	w.WriteHeader(http.StatusOK)
 }
