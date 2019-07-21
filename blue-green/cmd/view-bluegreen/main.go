@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"net/http"
@@ -12,12 +11,6 @@ import (
 
 	"github.com/gdamore/tcell"
 )
-
-// Payload is the response returned by the server. It simply indicates whether
-// the server is a blue or a green deployment.
-type Payload struct {
-	Color string `json:"color,omitempty"`
-}
 
 func main() {
 	u := flag.String("url", "", "the URL to query (required)")
@@ -102,17 +95,13 @@ func ping(ctx context.Context, u *url.URL, s tcell.Screen, x, y int) {
 	}
 	defer r.Body.Close()
 
-	p := &Payload{}
-	err = json.NewDecoder(r.Body).Decode(p)
-	if err != nil {
-		s.SetContent(x, y, '◼', nil, tcell.StyleDefault.Foreground(tcell.ColorRed))
-		return
-	}
-
-	switch p.Color {
+	switch r.Header.Get("Deployment-Colour") {
 	case "blue":
 		s.SetContent(x, y, '◼', nil, tcell.StyleDefault.Foreground(tcell.ColorBlue))
 	case "green":
 		s.SetContent(x, y, '◼', nil, tcell.StyleDefault.Foreground(tcell.ColorGreen))
+	default:
+		fmt.Fprintf(os.Stderr, "unable to determine deployment colour")
+		s.SetContent(x, y, '◼', nil, tcell.StyleDefault.Foreground(tcell.ColorRed))
 	}
 }
