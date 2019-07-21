@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -18,6 +20,21 @@ type Payload struct {
 }
 
 func main() {
+	u := flag.String("url", "", "the URL to query (required)")
+	flag.Parse()
+
+	if *u == "" {
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	p, err := url.Parse(*u)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "unable to parse url:", err)
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	s, err := tcell.NewScreen()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -67,28 +84,18 @@ func main() {
 			s.SetContent(x, y, '◼', nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
 			s.Show()
 
-			go ping(ctx, s, x, y)
+			go ping(ctx, p, s, x, y)
 
 			i++
 		}
 	}
 }
 
-func ping(ctx context.Context, s tcell.Screen, x, y int) {
+func ping(ctx context.Context, u *url.URL, s tcell.Screen, x, y int) {
 	defer s.Show()
 
-	// time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
-
-	// choice := rand.Intn(2)
-	// switch choice {
-	// case 0:
-	// 	s.SetContent(x, y, '◼', nil, tcell.StyleDefault.Foreground(tcell.ColorGreen))
-	// case 1:
-	// 	s.SetContent(x, y, '◼', nil, tcell.StyleDefault.Foreground(tcell.ColorBlue))
-	// }
-
 	client := &http.Client{Timeout: 10 * time.Second}
-	r, err := client.Get("https://bg-bluegreen.cfapps.io/")
+	r, err := client.Get(u.String())
 	if err != nil {
 		s.SetContent(x, y, '◼', nil, tcell.StyleDefault.Foreground(tcell.ColorRed))
 		return
