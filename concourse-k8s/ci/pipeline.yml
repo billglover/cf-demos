@@ -1,0 +1,40 @@
+---
+resources:
+- name: cots-application-vendor
+  type: docker-image
+  icon: mdi-docker
+  source:
+    repository: billglover/cots-application
+
+- name: cots-application-internal
+  type: docker-image
+  icon: mdi-docker
+  source:
+    repository: billglover/cots-application-internal
+    username: {{docker-username}}
+    password: {{docker-password}}
+
+- name: cf-demos
+  type: git
+  icon: github-circle
+  source:
+    branch: master
+    uri: https://github.com/billglover/cf-demos
+    paths: [concourse-k8s/*]
+
+jobs:
+- name: push-vendor-internal
+  plan:
+  - get: cots-application-vendor
+    trigger: true
+    params:
+      save: true
+
+  - put: cots-application-internal
+    params:
+      load: cots-application-vendor
+
+- name: deploy
+  plan:
+    - get: cf-demos
+      trigger: true
