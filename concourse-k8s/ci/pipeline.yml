@@ -1,26 +1,41 @@
 ---
+resource_types:
+- name: kubernetes
+  type: docker-image
+  source:
+    repository: zlabjp/kubernetes-resource
+    tag: "1.15"
+
 resources:
 - name: cots-application-vendor
   type: docker-image
-  icon: mdi-docker
   source:
     repository: billglover/cots-application
 
 - name: cots-application-internal
   type: docker-image
-  icon: mdi-docker
   source:
-    repository: billglover/cots-application-internal
+    repository: harbor.berkeley.cf-app.com:443/library/cots-application-internal
     username: {{docker-username}}
     password: {{docker-password}}
+    insecure_registries:
+    - harbor.berkeley.cf-app.com:443
 
 - name: cf-demos
   type: git
-  icon: github-circle
+  webhook_token: {{webhook_token}}
   source:
     branch: master
     uri: https://github.com/billglover/cf-demos
     paths: [concourse-k8s/*]
+
+- name: k8s-cluster
+  type: kubernetes
+  source:
+    server: https://cluster-1.berkeley.cf-app.com:8443
+    namespace: default
+    token: {{cluster_token}}
+    certificate_authority: {{cluster_ca_cert}}
 
 jobs:
 - name: push-vendor-internal
@@ -29,12 +44,19 @@ jobs:
     trigger: true
     params:
       save: true
-
   - put: cots-application-internal
     params:
       load: cots-application-vendor
 
 - name: deploy
   plan:
-    - get: cf-demos
-      trigger: true
+  - get: cf-demos
+    trigger: true
+  - get: cots-application-internal
+    trigger: true
+    passed:
+      - push-vendor-internal
+  - put: k8s-cluster
+    params:
+      kubectl: apply -f cf-demos/concourse-k8s/deployment/cots-application.yml
+      wait_until_ready_selector: app=nginx
