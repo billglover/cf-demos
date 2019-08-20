@@ -6,13 +6,20 @@ resource_types:
     repository: zlabjp/kubernetes-resource
     tag: "1.15"
 
-resources:
-- name: cots-application-vendor
+- name: file-url
   type: docker-image
+  source:
+    repository: pivotalservices/concourse-curl-resource
+    tag: latest
+
+resources:
+- name: vendor-app-external
+  type: docker-image
+  check_every: 10s
   source:
     repository: billglover/cots-application
 
-- name: cots-application-internal
+- name: vendor-app-internal
   type: docker-image
   source:
     repository: harbor.berkeley.cf-app.com:443/library/cots-application-internal
@@ -21,42 +28,71 @@ resources:
     insecure_registries:
     - harbor.berkeley.cf-app.com:443
 
-- name: cf-demos
+- name: deployment-config
   type: git
-  webhook_token: {{webhook_token}}
+  check_every: 10s
   source:
     branch: master
     uri: https://github.com/billglover/cf-demos
     paths: [concourse-k8s/*]
 
-- name: k8s-cluster
+- name: pks-test
   type: kubernetes
   source:
     server: https://cluster-1.berkeley.cf-app.com:8443
-    namespace: default
+    namespace: test
     token: {{cluster_token}}
     certificate_authority: {{cluster_ca_cert}}
+
+- name: pks-prod
+  type: kubernetes
+  source:
+    server: https://cluster-1.berkeley.cf-app.com:8443
+    namespace: prod
+    token: {{cluster_token}}
+    certificate_authority: {{cluster_ca_cert}}
+
+- name: health-check
+  type: file-url
+  source:
+    url: http://35.189.214.71/
+    filename: response
 
 jobs:
 - name: push-vendor-internal
   plan:
-  - get: cots-application-vendor
+  - get: vendor-app-external
     trigger: true
     params:
       save: true
-  - put: cots-application-internal
+  - put: vendor-app-internal
     params:
-      load: cots-application-vendor
+      load: vendor-app-external
 
-- name: deploy
+- name: deploy-to-test
   plan:
-  - get: cf-demos
-    trigger: true
-  - get: cots-application-internal
-    trigger: true
-    passed:
-      - push-vendor-internal
-  - put: k8s-cluster
+  - aggregate:
+    - get: deployment-config
+      trigger: true
+    - get: vendor-app-internal
+      passed: [push-vendor-internal]
+  - put: pks-test
+    params:
+      kubectl: apply -f cf-demos/concourse-k8s/deployment/cots-application.yml
+      wait_until_ready_selector: app=nginx
+
+- name: test
+  plan:
+  - get: vendor-app-internal
+    passed: [deploy-to-test]
+  - get: health-check
+
+- name: deploy-to-prod
+  plan:
+  - get: deployment-config
+  - get: vendor-app-internal
+    passed: [test]
+  - put: pks-prod
     params:
       kubectl: apply -f cf-demos/concourse-k8s/deployment/cots-application.yml
       wait_until_ready_selector: app=nginx
