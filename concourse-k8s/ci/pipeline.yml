@@ -13,16 +13,16 @@ resource_types:
     tag: latest
 
 resources:
-- name: vendor-app-external
+- name: vendor-app-untrusted
   type: docker-image
   check_every: 10s
   source:
     repository: billglover/cots-application
 
-- name: vendor-app-internal
+- name: vendor-app-trusted
   type: docker-image
   source:
-    repository: harbor.berkeley.cf-app.com:443/library/cots-application-internal
+    repository: harbor.berkeley.cf-app.com:443/library/vendor-app-trusted
     username: {{docker-username}}
     password: {{docker-password}}
     insecure_registries:
@@ -59,40 +59,42 @@ resources:
     filename: response
 
 jobs:
-- name: push-vendor-internal
+- name: push-to-harbor
   plan:
-  - get: vendor-app-external
+  - get: vendor-app-untrusted
     trigger: true
     params:
       save: true
-  - put: vendor-app-internal
+  - put: vendor-app-trusted
     params:
-      load: vendor-app-external
+      load: vendor-app-untrusted
 
 - name: deploy-to-test
   plan:
   - aggregate:
     - get: deployment-config
       trigger: true
-    - get: vendor-app-internal
-      passed: [push-vendor-internal]
+    - get: vendor-app-trusted
+      passed: [push-to-harbor]
   - put: pks-test
     params:
-      kubectl: apply -f cf-demos/concourse-k8s/deployment/cots-application.yml
+      kubectl: apply -f deployment-config/concourse-k8s/deployment/cots-application.yml
       wait_until_ready_selector: app=nginx
 
 - name: test
   plan:
-  - get: vendor-app-internal
+  - get: vendor-app-trusted
     passed: [deploy-to-test]
   - get: health-check
+    trigger: true
 
 - name: deploy-to-prod
   plan:
   - get: deployment-config
-  - get: vendor-app-internal
+  - get: vendor-app-trusted
+    trigger: true
     passed: [test]
   - put: pks-prod
     params:
-      kubectl: apply -f cf-demos/concourse-k8s/deployment/cots-application.yml
+      kubectl: apply -f deployment-config/concourse-k8s/deployment/cots-application.yml
       wait_until_ready_selector: app=nginx
