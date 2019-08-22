@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: billglover/cots-application
+        image: harbor.berkeley.cf-app.com/library/vendor-app-trusted:latest
         ports:
         - containerPort: 80
         resources:
