@@ -33,6 +33,7 @@ spec:
       containers:
       - name: vfrfi-cots
         image: harbor.berkeley.cf-app.com/library/vendor-app-trusted:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         resources:
