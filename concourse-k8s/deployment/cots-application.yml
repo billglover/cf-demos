@@ -3,34 +3,34 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: nginx
-  name: nginx
+    app: vfrfi-cots
+  name: vfrfi-cots
 spec:
   ports:
     - port: 8080
   selector:
-    app: nginx
+    app: vfrfi-cots
   type: LoadBalancer
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: vfrfi-cots-deployment
   labels:
-    app: nginx
+    app: vfrfi-cots
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app: vfrfi-cots
   template:
     metadata:
       labels:
-        app: nginx
+        app: vfrfi-cots
     spec:
       containers:
-      - name: nginx
+      - name: vfrfi-cots
         image: harbor.berkeley.cf-app.com/library/vendor-app-trusted:latest
         ports:
         - containerPort: 8080
