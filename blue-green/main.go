@@ -16,6 +16,7 @@ func main() {
 
 // Hello handles HTTP requests and returns the value of the color variable.
 func hello(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Deployment-Colour", colour)
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Hello, %s", colour)
